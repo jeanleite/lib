@@ -1,0 +1,98 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package utils;
+import com.gargoylesoftware.htmlunit.*;
+
+import java.net.URL;
+import java.util.logging.Level;
+
+public class WebClientFactory {
+    private WebClient browser;
+
+    /**
+     * MÃ©todo responsÃ¡vel por setar os valores do browser
+     */
+
+    private void setBrowser() {
+        browser = new WebClient(BrowserVersion.CHROME);
+        browser.getOptions().setThrowExceptionOnScriptError(false);
+        browser.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        browser.getOptions().setRedirectEnabled(true);
+        browser.getOptions().setJavaScriptEnabled(false);
+        browser.getOptions().setCssEnabled(false);
+        browser.getOptions().setUseInsecureSSL(true);
+        browser.setAjaxController(new NicelyResynchronizingAjaxController());
+        browser.getOptions().setTimeout(400000);
+        browser.waitForBackgroundJavaScript(600000);
+        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
+        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
+
+    }
+
+    /**
+     * MÃ©todo responsÃ¡vel por retornar o browser
+     *
+     * @return Retornar o browser com os valores setados
+     */
+    public  WebClient getWebClient() {
+        if (browser == null) {
+            setBrowser();
+        }
+        return browser;
+    }
+
+    public static WebRequest login(String url, String user, String password, String captcha)
+    {
+        try {
+            WebRequest requestSettings = new WebRequest(new URL(url), HttpMethod.POST);
+            requestSettings.setRequestBody("_action=1&__S=&" +
+                    "captcha="+captcha+"&logon="+user+
+                    "&senha="+password);
+            return requestSettings;
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return null; //erro
+        }
+    }
+
+    public static WebRequest captcha(String url)
+    {
+        try {
+            WebRequest requestSettings = new WebRequest(new URL(url), HttpMethod.POST);
+            requestSettings.setRequestBody("_action=5");
+            return requestSettings;
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return null; //erro
+        }
+    }
+
+    public static WebRequest token(String url)
+    {
+        try {
+            WebRequest requestSettings = new WebRequest(new URL(url), HttpMethod.POST);
+            requestSettings.setRequestBody("_action=6");
+            return requestSettings;
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return null; //erro
+        }
+    }
+
+    public static WebRequest getVetor(String url, String placa)
+    {
+        try {
+            WebRequest requestSettings = new WebRequest(new URL(url), HttpMethod.POST);
+            requestSettings.setRequestBody("Placa="+placa+"&_action=3");
+            return requestSettings;
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return null; //erro
+        }
+    }
+
+
+}
